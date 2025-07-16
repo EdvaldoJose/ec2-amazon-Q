@@ -1,0 +1,155 @@
+=== INFORMAÇÕES DA INFRAESTRUTURA ===
+
+✅ RECURSOS CRIADOS COM SUCESSO:
+
+EC2 Instance:
+- Instance ID: i-0467269d1d972bafb
+- Instance Type: t4g.medium (ARM64)
+- Estado: running
+- IP Público: 3.216.188.183 (Elastic IP)
+- IP Privado: 172.31.96.55
+- Key Pair: ec2-amazon-q-key.pem
+- AMI: ami-03366677788cddd0a (Amazon Linux 2023)
+- Availability Zone: us-east-1c
+
+✅ RDS PostgreSQL (CONFIGURADO):
+- Endpoint: database-1.cd2owuoacfg0.us-east-1.rds.amazonaws.com
+- Engine: PostgreSQL 17.4
+- Instance Class: db.t4g.micro
+- Usuário: postgres
+- Porta: 5432
+- Status: available
+- Security Group: sg-0d2f344367f9ff0e2 (configurado para aceitar conexões da EC2)
+
+Elastic IP:
+- Allocation ID: eipalloc-0205a7c6688b97d90
+- Public IP: 3.216.188.183
+- Association ID: eipassoc-0527e932c0bd3dc80
+
+Security Groups:
+- EC2 SG: sg-00b9887d1e3b305c1 (ec2-amazon-q-sg)
+  * SSH (22): 0.0.0.0/0
+  * HTTP (80): 0.0.0.0/0
+  * HTTPS (443): 0.0.0.0/0
+- RDS SG: sg-0d2f344367f9ff0e2 (configurado)
+  * PostgreSQL (5432): acesso da EC2 (sg-00b9887d1e3b305c1)
+
+VPC e Rede:
+- VPC: vpc-029793f5cea0c777d (VPC padrão)
+- Subnet: subnet-05bc28c5aa3de8a4f
+
+=== COMANDOS DE CONEXÃO ===
+
+SSH para EC2:
+ssh -i ec2-amazon-q-key.pem ec2-user@3.216.188.183
+
+Ou use o script:
+./connect-ec2.sh
+
+PostgreSQL RDS (de dentro da EC2):
+psql -h database-1.cd2owuoacfg0.us-east-1.rds.amazonaws.com -U postgres -d postgres
+
+=== CONFIGURAÇÃO DO BANCO DE DADOS ===
+
+✅ BANCO POSTGRESQL DISPONÍVEL:
+- Host: database-1.cd2owuoacfg0.us-east-1.rds.amazonaws.com
+- Porta: 5432
+- Engine: PostgreSQL 17.4
+- Usuário: postgres
+- Database padrão: postgres
+
+⚠️ IMPORTANTE: Você precisa da senha do RDS existente
+- Se não souber a senha, pode resetá-la no console AWS RDS
+- Ou solicitar a senha ao administrador da conta
+
+=== SCRIPTS DISPONÍVEIS ===
+
+- connect-ec2.sh: Conecta à instância EC2 via SSH
+- test-database.sh: Instruções completas para testar o PostgreSQL RDS
+- cleanup.sh: Remove toda a infraestrutura
+- monitoring.sh: Monitora recursos e métricas
+
+=== COMANDOS PARA TESTAR O BANCO ===
+
+1. Conectar à EC2:
+   ./connect-ec2.sh
+
+2. Instalar cliente PostgreSQL (dentro da EC2):
+   sudo yum install -y postgresql15
+
+3. Testar conectividade:
+   nc -zv database-1.cd2owuoacfg0.us-east-1.rds.amazonaws.com 5432
+
+4. Conectar ao banco:
+   psql -h database-1.cd2owuoacfg0.us-east-1.rds.amazonaws.com -U postgres -d postgres
+
+=== COMANDOS SQL DE EXEMPLO ===
+
+-- Criar database para o projeto
+CREATE DATABASE ec2_amazon_q_db;
+
+-- Conectar ao novo database
+\c ec2_amazon_q_db
+
+-- Criar tabela de teste
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100),
+    email VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Inserir dados
+INSERT INTO usuarios (nome, email) VALUES 
+('João Silva', 'joao@email.com'),
+('Maria Santos', 'maria@email.com'),
+('Pedro Costa', 'pedro@email.com');
+
+-- Consultar dados
+SELECT * FROM usuarios;
+
+=== CUSTOS ESTIMADOS ===
+
+⚠️ ATENÇÃO: Recursos NÃO estão no Free Tier!
+- EC2 t4g.medium: ~$13/mês
+- Elastic IP: $0 (enquanto associado)
+- RDS: Já existente (sem custo adicional para este projeto)
+
+Para Free Tier: alterar EC2 para t2.micro ou t3.micro
+
+=== PRÓXIMOS PASSOS ===
+
+1. ✅ Conectar à EC2: ./connect-ec2.sh
+2. ✅ Instalar cliente PostgreSQL na EC2
+3. ✅ Testar conexão com RDS: ./test-database.sh
+4. ⏳ Obter senha do RDS ou resetá-la
+5. ⏳ Criar database e tabelas para o projeto
+6. ⏳ Desenvolver aplicação
+
+=== TROUBLESHOOTING ===
+
+Se não conseguir conectar ao RDS:
+1. Verificar se está conectando de dentro da EC2
+2. Confirmar se o Security Group permite conexão
+3. Testar conectividade: nc -zv <RDS_ENDPOINT> 5432
+4. Verificar se tem a senha correta
+
+Para resetar senha do RDS:
+1. Ir ao console AWS RDS
+2. Selecionar a instância database-1
+3. Modify > New master password
+
+=== STATUS ATUAL ===
+
+✅ EC2 Instance: CRIADA e RODANDO
+✅ RDS PostgreSQL: DISPONÍVEL e CONFIGURADO
+✅ Elastic IP: ASSOCIADO
+✅ Security Groups: CONFIGURADOS
+✅ Key Pair: CRIADO
+✅ Conectividade SSH: DISPONÍVEL
+✅ Conectividade RDS: CONFIGURADA
+
+Data de criação: $(date)
+Região: us-east-1
+IP Público: 3.216.188.183
+RDS Endpoint: database-1.cd2owuoacfg0.us-east-1.rds.amazonaws.com
